@@ -5,7 +5,6 @@ import (
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/sasha-s/go-deadlock"
 	"math"
 	"sync"
 )
@@ -333,14 +332,12 @@ func (node liquidNode) Path(src cube.Pos) liquidPath {
 }
 
 // liquidQueuePool is use to re-use liquid node queues.
-var liquidQueuePool = deadlock.Pool{
-	Pool: sync.Pool{
-		New: func() any {
-			return &liquidQueue{
-				nodes:        make([]liquidNode, 0, 64),
-				shortestPath: math.MaxInt8,
-			}
-		},
+var liquidQueuePool = sync.Pool{
+	New: func() any {
+		return &liquidQueue{
+			nodes:        make([]liquidNode, 0, 64),
+			shortestPath: math.MaxInt8,
+		}
 	},
 }
 

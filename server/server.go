@@ -16,6 +16,7 @@ import (
 	"runtime/debug"
 	"slices"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"syscall"
 	"time"
@@ -45,7 +46,7 @@ import (
 type Server struct {
 	conf Config
 
-	once    deadlock.Once
+	once    sync.Once
 	started atomic.Pointer[time.Time]
 
 	world, nether, end *world.World
@@ -62,10 +63,10 @@ type Server struct {
 	p map[uuid.UUID]*onlinePlayer
 	// pwg is a sync.WaitGroup used to wait for all players to be disconnected
 	// before server shutdown, so that their data is saved properly.
-	pwg deadlock.WaitGroup
+	pwg sync.WaitGroup
 	// wg is used to wait for all Listeners to be closed and their respective
 	// goroutines to be finished.
-	wg deadlock.WaitGroup
+	wg sync.WaitGroup
 }
 
 // incoming holds data of a player that is connecting to the server.
@@ -331,7 +332,7 @@ func (srv *Server) close() {
 // the maximum player count of additional Listeners added is not enforced
 // automatically. The limit must be enforced by the Listener.
 func (srv *Server) listen(l Listener) {
-	wg := new(deadlock.WaitGroup)
+	wg := new(sync.WaitGroup)
 	ctx, cancel := context.WithCancel(context.Background())
 	for {
 		c, err := l.Accept()

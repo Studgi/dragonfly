@@ -66,7 +66,7 @@ type World struct {
 	scheduledUpdates *scheduledTickQueue
 	neighbourUpdates []neighbourUpdate
 
-	viewerMu sync.Mutex
+	viewerMu deadlock.Mutex
 	viewers  map[*Loader]Viewer
 }
 

@@ -35,7 +35,7 @@ import (
 // of abstraction over direct packets. A Session basically 'controls' an entity.
 type Session struct {
 	conf           Config
-	once, connOnce deadlock.Once
+	once, connOnce sync.Once
 
 	ent             *world.EntityHandle
 	conn            Conn
@@ -84,16 +84,16 @@ type Session struct {
 
 	recipes map[uint32]recipe.Recipe
 
-	blobMu                sync.Mutex
+	blobMu                deadlock.Mutex
 	blobs                 map[uint64][]byte
 	openChunkTransactions []map[uint64]struct{}
 	invOpened             bool
 
-	hudMu      sync.RWMutex
+	hudMu      deadlock.RWMutex
 	hudUpdates map[hud.Element]bool
 	hiddenHud  map[hud.Element]struct{}
 
-	debugShapesMu     sync.RWMutex
+	debugShapesMu     deadlock.RWMutex
 	debugShapes       map[int]debug.Shape
 	debugShapesAdd    chan debug.Shape
 	debugShapesRemove chan int

@@ -102,7 +102,7 @@ func NewEntity(t EntityType, conf EntityConfig) *EntityHandle {
 // entityFromData reads an entity from the decoded NBT data passed and returns
 // an EntityHandle.
 func entityFromData(t EntityType, id int64, data map[string]any) *EntityHandle {
-	handle := &EntityHandle{t: t, cond: sync.NewCond(&sync.Mutex{}), worldless: &atomic.Bool{}}
+	handle := &EntityHandle{t: t, cond: sync.NewCond(&deadlock.Mutex{}), worldless: &atomic.Bool{}}
 	binary.LittleEndian.PutUint64(handle.id[8:], uint64(id))
 	handle.decodeNBT(data)
 	t.DecodeNBT(data, &handle.data)
