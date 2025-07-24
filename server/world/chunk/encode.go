@@ -2,6 +2,7 @@ package chunk
 
 import (
 	"bytes"
+	"github.com/sasha-s/go-deadlock"
 	"sync"
 )
 
@@ -19,9 +20,11 @@ var (
 	// RuntimeIDToState must hold a function to convert a runtime ID to a name and its state properties.
 	RuntimeIDToState func(runtimeID uint32) (name string, properties map[string]any, found bool)
 	// pool is used to pool byte buffers used for encoding chunks.
-	pool = sync.Pool{
-		New: func() any {
-			return bytes.NewBuffer(make([]byte, 0, 1024))
+	pool = deadlock.Pool{
+		Pool: sync.Pool{
+			New: func() any {
+				return bytes.NewBuffer(make([]byte, 0, 1024))
+			},
 		},
 	}
 )

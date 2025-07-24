@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/player/debug"
 	"github.com/df-mc/dragonfly/server/player/hud"
+	"github.com/sasha-s/go-deadlock"
 	"io"
 	"log/slog"
 	"net"
@@ -34,7 +35,7 @@ import (
 // of abstraction over direct packets. A Session basically 'controls' an entity.
 type Session struct {
 	conf           Config
-	once, connOnce sync.Once
+	once, connOnce deadlock.Once
 
 	ent             *world.EntityHandle
 	conn            Conn
@@ -50,7 +51,7 @@ type Session struct {
 
 	teleportPos atomic.Pointer[mgl64.Vec3]
 
-	entityMutex sync.RWMutex
+	entityMutex deadlock.RWMutex
 	// currentEntityRuntimeID holds the runtime ID assigned to the last entity. It is incremented for every
 	// entity spawned to the session.
 	currentEntityRuntimeID uint64

@@ -1,9 +1,11 @@
 package cmd
 
-import "sync"
+import (
+	"github.com/sasha-s/go-deadlock"
+)
 
 // commands holds a list of registered commands indexed by their name.
-var commands sync.Map
+var commands deadlock.Map
 
 // Register registers a command with its name and all aliases that it has. Any command with the same name or
 // aliases will be overwritten.

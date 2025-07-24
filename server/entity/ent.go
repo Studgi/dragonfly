@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
-	"sync"
+	"github.com/sasha-s/go-deadlock"
 	"time"
 )
 
@@ -24,7 +24,7 @@ type Ent struct {
 	tx     *world.Tx
 	handle *world.EntityHandle
 	data   *world.EntityData
-	once   sync.Once
+	once   deadlock.Once
 }
 
 // Open converts a world.EntityHandle to an Ent in a world.Tx.

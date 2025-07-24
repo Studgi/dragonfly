@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/player/debug"
 	"github.com/df-mc/dragonfly/server/player/hud"
+	"github.com/sasha-s/go-deadlock"
 	"math"
 	"math/rand/v2"
 	"net"
 	"slices"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/block"
@@ -99,7 +99,7 @@ type playerData struct {
 
 	hunger *hungerManager
 
-	once sync.Once
+	once deadlock.Once
 
 	prevWorld *world.World
 }

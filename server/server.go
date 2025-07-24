@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"encoding/base64"
 	"fmt"
+	"github.com/sasha-s/go-deadlock"
 	"iter"
 	"maps"
 	"os"
@@ -15,7 +16,6 @@ import (
 	"runtime/debug"
 	"slices"
 	"strings"
-	"sync"
 	"sync/atomic"
 	"syscall"
 	"time"
@@ -45,7 +45,7 @@ import (
 type Server struct {
 	conf Config
 
-	once    sync.Once
+	once    deadlock.Once
 	started atomic.Pointer[time.Time]
 
 	world, nether, end *world.World
@@ -56,16 +56,16 @@ type Server struct {
 	listeners []Listener
 	incoming  chan incoming
 
-	pmu sync.RWMutex
+	pmu deadlock.RWMutex
 	// p holds a map of all players currently connected to the server. When they
 	// leave, they are removed from the map.
 	p map[uuid.UUID]*onlinePlayer
 	// pwg is a sync.WaitGroup used to wait for all players to be disconnected
 	// before server shutdown, so that their data is saved properly.
-	pwg sync.WaitGroup
+	pwg deadlock.WaitGroup
 	// wg is used to wait for all Listeners to be closed and their respective
 	// goroutines to be finished.
-	wg sync.WaitGroup
+	wg deadlock.WaitGroup
 }
 
 // incoming holds data of a player that is connecting to the server.
@@ -331,7 +331,7 @@ func (srv *Server) close() {
 // the maximum player count of additional Listeners added is not enforced
 // automatically. The limit must be enforced by the Listener.
 func (srv *Server) listen(l Listener) {
-	wg := new(sync.WaitGroup)
+	wg := new(deadlock.WaitGroup)
 	ctx, cancel := context.WithCancel(context.Background())
 	for {
 		c, err := l.Accept()

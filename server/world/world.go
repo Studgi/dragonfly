@@ -11,6 +11,7 @@ import (
 	"github.com/df-mc/goleveldb/leveldb"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/google/uuid"
+	"github.com/sasha-s/go-deadlock"
 	"iter"
 	"maps"
 	"math/rand/v2"
@@ -31,13 +32,13 @@ type World struct {
 
 	queue        chan transaction
 	queueClosing chan struct{}
-	queueing     sync.WaitGroup
+	queueing     deadlock.WaitGroup
 
 	// advance is a bool that specifies if this World should advance the current
 	// tick, time and weather saved in the Settings struct held by the World.
 	advance bool
 
-	o sync.Once
+	o deadlock.Once
 
 	set     *Settings
 	handler atomic.Pointer[Handler]
@@ -45,7 +46,7 @@ type World struct {
 	weather
 
 	closing chan struct{}
-	running sync.WaitGroup
+	running deadlock.WaitGroup
 
 	// chunks holds a cache of chunks currently loaded. These chunks are cleared
 	// from this map after some time of not being used.
