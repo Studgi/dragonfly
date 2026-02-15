@@ -72,9 +72,6 @@ func (s *Session) addSpecificMetadata(e any, m protocol.EntityMetadata) {
 	if i, ok := e.(invisible); ok && i.Invisible() {
 		m.SetFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible)
 	}
-	if b, ok := e.(baby); ok && b.Baby() {
-		m.SetFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagBaby)
-	}
 	if i, ok := e.(immobile); ok && i.Immobile() {
 		m.SetFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagNoAI)
 	}
@@ -226,10 +223,6 @@ type immobile interface {
 
 type invisible interface {
 	Invisible() bool
-}
-
-type baby interface {
-	Baby() bool
 }
 
 type scaled interface {
